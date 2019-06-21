@@ -1,0 +1,44 @@
+@import 'common';
+
+body {
+  width: 100%;
+  height: 100%;
+  // background-color: #333;
+}
+
+#bgImg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.clip-view {
+  position: absolute;
+  top: 0;
+  left: 0;
+  // bottom: auto;
+
+  canvas {
+    border-radius:  50%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border: 2px solid #000000;
+  }
+
+  span {
+    position: absolute;
+    display: inline-block;
+    top: 110%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, .4);
+    line-height: 20px;
+    font-size: 10px;
+    color: #ffffff;
+    padding: 0 4px;
+    white-space:nowrap;
+  }
+}

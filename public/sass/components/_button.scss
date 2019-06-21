@@ -1,0 +1,102 @@
+button {
+  outline: none;
+  transition: background-color $anime-duration-s ease-in-out;
+}
+
+.btn {
+  border-radius: 2px;
+  border: 1px solid #fff;
+  padding: 0 20px;
+  height: 32px;
+  cursor: pointer;
+  outline: none;
+  text-align: center;
+
+  &.sm {
+    padding: 0 15px;
+    font-size: 10px;
+    border-radius: 2px;
+    height: 24px;
+    line-height: 1;
+  }
+
+  &.lg {
+    padding: 0 30px;
+    height: 40px;
+    line-height: 1;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+
+  &.cancel {
+    border-color: $theme-gray-1;
+    padding: 0 16px;
+    height: 36px;
+    line-height: 36px;
+    background-color: $theme-gray-1;
+    color: #4a4a4a;
+    font-size: 14px;
+  }
+
+  &.ok,
+  &.submit {
+    border-color: $theme-red-1;
+    padding: 0 16px;
+    height: 36px;
+    line-height: 36px;
+    background-color: $theme-red-1;
+    color: #fff;
+    font-size: 14px;
+  }
+
+  &.bounce {
+    transition: transform $anime-duration-s ease-in-out;
+
+    &:active {
+      transform: scale(0.88);
+    }
+  }
+
+  &:disabled {
+    background-color: $theme-disabled-bg;
+    color: $theme-disabled-color;
+    cursor: not-allowed;
+  }
+
+
+  &.theme-red-1,
+  &.theme-gray-1 {
+    transition: border-color $anime-duration-s ease-in-out, background-color $anime-duration-s ease-in-out, transform $anime-duration-s ease-in-out;
+  }
+
+  &.theme-red-1 {
+    color: #fff!important;
+    border-color: $theme-red-1!important;
+    background-color: $theme-red-1!important;
+
+    &:hover {
+      border-color: $theme-red-1-hover!important;
+      background-color: $theme-red-1-hover!important;
+    }
+
+    &:active {
+      border-color: $theme-red-1-active!important;
+      background-color: $theme-red-1-active!important;
+    }
+  }
+
+  &.theme-gray-1 {
+    border-color: $theme-gray-1!important;
+    background-color: $theme-gray-1!important;
+
+    &:hover {
+      border-color: $theme-gray-1-hover!important;
+      background-color: $theme-gray-1-hover!important;
+    }
+
+    &:active {
+      border-color: $theme-gray-1-active!important;
+      background-color: $theme-gray-1-active!important;
+    }
+  }
+}

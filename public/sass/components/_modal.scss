@@ -1,0 +1,217 @@
+.modal-mask {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  height: 100%; // *
+  background-color: rgba(0,0,0,.65);
+  z-index: 1000;
+  filter: alpha(opacity=50);
+}
+
+.modal-wrap {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  -webkit-overflow-scrolling: touch;
+  overflow: auto;
+  outline: 0;
+  z-index: 1000;
+}
+
+.modal {
+  position: relative;
+  top: 50%;
+  margin: 0 auto;
+  padding-bottom: 24px;
+  width: auto;
+  width: 416px;
+  line-height: 1.5;
+  color: rgba(0,0,0,.65);
+  font-size: 14px;
+  transform: translateY(-50%);
+}
+
+.modal-content {
+  position: relative;
+  border: 0;
+//   border-radius: 4px;
+  background-color: #fff;
+  background-clip: padding-box;
+  box-shadow: 0 4px 12px rgba(0,0,0,.15);
+}
+
+////
+.modal-close {
+  position: absolute;
+  border: 0;
+//   right: 0;
+  right: -56px;
+  top: 0;
+  line-height: 1;
+  background: transparent;
+//   color: rgba(0,0,0,.45);
+  color: #fff;
+  cursor: pointer;
+  font-weight: 700;
+  outline: 0;
+  text-decoration: none;
+  transition: color .3s, transform $anime-duration-s ease-in-out;
+  z-index: 10;
+
+  &:active {
+    transform: scale(0.618);
+  }
+}
+
+.modal-close-x {
+  display: block;
+  width: 56px;
+  height: 56px;
+  line-height: 56px;
+  font-size: 16px;
+  font-style: normal;
+  text-align: center;
+  text-transform: none;
+  text-rendering: auto;
+}
+
+.modal-close-x:before {
+  content: "\E633";
+  display: block;
+  font-family: anticon!important;
+}
+
+.modal-body {
+  padding: 24px;
+  line-height: 1.5;
+  font-size: 14px;
+  word-wrap: break-word;
+}
+
+////
+.confirm .modal-body {
+  padding: 32px 32px 24px;
+}
+
+.confirm-body-wrapper:before,
+.confirm-body-wrapper:after {
+  content: "";
+  display: table;
+}
+
+.confirm-body-wrapper:after {
+  clear: both;
+}
+
+.confirm-body {
+  & > .icon {
+    float: left;
+    margin-right: 16px;
+    line-height: 1;
+    color: #faad14;
+    font-size: 22px;
+    font-style: normal;
+    text-align: center;
+    text-transform: none;
+    text-rendering: optimizeLegibility;
+    vertical-align: baseline;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .confirm-title {
+    display: block;
+    line-height: 22px;
+    color: rgba(0,0,0,.85);
+    font-size: 16px;
+    font-weight: 500;
+    overflow: auto;
+  }
+
+  .confirm-content {
+    margin-top: 8px;
+    margin-left: 38px;
+    color: rgba(0,0,0,.65);
+    font-size: 14px;
+  }
+}
+.confirm-body
+
+.icon-question-circle:before {
+  display: block;
+  content: "\E63B";
+  font-family: anticon!important;
+}
+
+.confirm .confirm-btns {
+  float: right;
+  margin-top: 24px;
+}
+
+//// Animation
+
+.fade-appear,.fade-enter,.fade-leave {
+  animation-duration: .2s;
+  animation-fill-mode: both;
+  animation-play-state: paused
+}
+
+.fade-appear.fade-appear-active,.fade-enter.fade-enter-active {
+  animation-name: antFadeIn;
+  animation-play-state: running
+}
+
+.fade-leave.fade-leave-active {
+  animation-name: antFadeOut;
+  animation-play-state: running;
+  pointer-events: none
+}
+
+.fade-appear,.fade-enter {
+  opacity: 0
+}
+
+.fade-appear,.fade-enter,.fade-leave {
+  animation-timing-function: linear
+}
+
+@keyframes antFadeIn {
+  0% {
+    opacity: 0
+  }
+
+  to {
+    opacity: 1
+  }
+}
+
+@keyframes antFadeOut {
+  0% {
+    opacity: 1
+  }
+
+  to {
+    opacity: 0
+  }
+}
+
+
+@media (max-width: 468px) {
+  .modal {
+    width: 80%;
+  }
+
+  .modal-close {
+    right: -32px;
+
+    .modal-close-x {
+      width: 32px;
+      height: 32px;
+      line-height: 32px;
+    }
+  }
+}

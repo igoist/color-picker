@@ -1,0 +1,55 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  font-family: -apple-system-font, "Helvetica Neue", Tahoma, "PingFang SC", "Microsoft Yahei", sans-serif;
+  font-size: 16px;
+}
+
+body {
+  &.scrollForbidden {
+    overflow: hidden;
+  }
+}
+
+a {
+  color: #222;
+  text-decoration: none;
+
+  &:hover {
+    color: #c90000;
+  }
+}
+
+input, textarea {
+  outline: none;
+}
+
+textarea {
+  resize: none;
+}
+
+textarea::placeholder {
+  color: #bbbbbb;
+}
+
+textarea::-webkit-input-placeholder {
+  color: #bbbbbb;
+}
+
+textarea:-moz-placeholder { /* Firefox 18- */
+  color: #bbbbbb;
+}
+
+textarea::-moz-placeholder {  /* Firefox 19+ */
+  color: #bbbbbb;
+}
+
+textarea:-ms-input-placeholder {
+  color: #bbbbbb;
+}

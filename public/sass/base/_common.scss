@@ -1,0 +1,39 @@
+.clearfix {
+  &:before,
+  &:after {
+    content: "";
+    display: table;
+  }
+
+  &:after {
+    clear: both;
+  }
+}
+
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+// @font-face {
+//   font-family: anticon;
+//   src: url("/font/font_148784_v4ggb6wrjmkotj4i.eot");
+//   src: url("/font/font_148784_v4ggb6wrjmkotj4i.woff") format("woff"),url("/font/font_148784_v4ggb6wrjmkotj4i.ttf") format("truetype"),url("/font/font_148784_v4ggb6wrjmkotj4i.svg#iconfont") format("svg")
+// }
+
+// .anticon {
+//   display: inline-block;
+//   font-style: normal;
+//   vertical-align: baseline;
+//   text-align: center;
+//   text-transform: none;
+//   line-height: 1;
+//   text-rendering: optimizeLegibility;
+//   -webkit-font-smoothing: antialiased;
+//   -moz-osx-font-smoothing: grayscale;
+
+//   &:before {
+//     display: block;
+//     font-family: "anticon" !important;
+//   }
+// }
