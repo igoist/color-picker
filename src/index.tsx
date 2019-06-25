@@ -36,11 +36,13 @@ getScreenSources({}, (imgSrc: any) => {
 });
 
 const body = document.body;
-const radius = 80;
+const radius = 176;
 const borderSize = 2;
-const range = 11;
+const range = 21;
 const clipRange = Math.ceil((2 * radius) / range);
 let tmpClipData: (string[] | null) = null;
+let tmpCenterValue: string = '';
+let position: { x?: number, y?: number } = null;
 
 
 interface GetClipDataConfig {
@@ -96,19 +98,26 @@ const drawPoint = (config: DrawPointConfig) => {
         y: y * range + resize
       };
     } else {
-      ctx.lineWidth = 0.1;
-      // ctx.strokeStyle = 'rgba(255,255,255,0.4)'
-      ctx.strokeStyle = 'rgba(5,5,5,0.4)';
+      ctx.lineWidth = 0.6;
+      ctx.strokeStyle = 'rgba(255,255,255,0.618)';
       ctx.fillStyle = clipData[i];
       ctx.fillRect(x * range + resize, y * range + resize, range, range);
       ctx.strokeRect(x * range + resize, y * range + resize, range, range);
       ctx.restore();
+      ctx.lineWidth = 0.2;
+      ctx.strokeStyle = 'rgba(0,0,0,0.618)';
+      ctx.strokeRect(x * range + resize, y * range + resize, range, range);
+      ctx.restore();
     }
   }
-  ctx.lineWidth = 2;
-  ctx.strokeStyle = '#fc04db';
+  ctx.lineWidth = 6;
+  ctx.strokeStyle = '#fff';
   ctx.fillStyle = clipData[current];
   ctx.fillRect(cp.x, cp.y, range, range);
+  ctx.strokeRect(cp.x, cp.y, range, range);
+  ctx.restore();
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = '#000';
   ctx.strokeRect(cp.x, cp.y, range, range);
   ctx.restore();
 }
@@ -117,10 +126,10 @@ const drawPoint = (config: DrawPointConfig) => {
 const ClipView = () => {
   const cE = React.useRef(null);
 
-  const [state, setState] = React.useState({ top: `-${ radius }px`, left: `-${ radius }px` });
+  const [state, setState] = React.useState({ top: `-${ 190 }px`, left: `-${ 190 }px`, value: '#FFFFFF' });
 
   const onMouseMove = (e: any) => {
-    let position = {
+    position = {
       x: e.clientX - body.offsetLeft,
       y: e.clientY - body.offsetTop
     };
@@ -131,9 +140,13 @@ const ClipView = () => {
         imgData: tmpCanvasData,
       });
 
+      // 不可以在 drawPoint 设置 tmpCenterValue
+      tmpCenterValue = tmpClipData[~~(tmpClipData.length / 2)].toUpperCase();
+
       setState({
-        top: `${ position.y - radius - borderSize }px`,
-        left: `${ position.x - radius - borderSize }px`
+        top: `${ position.y - 80 - borderSize }px`,
+        left: `${ position.x - 80 - borderSize }px`,
+        value: tmpCenterValue
       });
     }
   }
@@ -145,6 +158,9 @@ const ClipView = () => {
     }
 
     body.addEventListener('mousemove', onMouseMove);
+    body.addEventListener('click', () => {
+      console.log('click: ', tmpCenterValue);
+    });
   }, []);
 
   React.useEffect(() => {
@@ -157,18 +173,22 @@ const ClipView = () => {
   });
 
   return (
-    <div
-      className='clip-view'
-      style={{
-        top: state.top,
-        left: state.left,
-        width: `${ 2 * radius + 2 * borderSize }px`,
-        height: `${ 2 * radius + 2 * borderSize }px`,
-        // backgroundColor: '#CCCFFF' // this line for code test
-      }}
-    >
-      <canvas ref={ cE } width='160' height='160'></canvas>
-      <span>#FFFFFF</span>
+    <div>
+      <div
+        className='clip-view'
+        style={{
+          top: state.top,
+          left: state.left,
+          // backgroundColor: '#CCCFFF' // this line for code test
+        }}
+      >
+        <canvas ref={ cE } width={ radius * 2 } height={ radius * 2 }></canvas>
+        <span>{ state.value }</span>
+      </div>
+
+      <div className='tmp-cb'
+        style={{ backgroundColor: state.value }}
+      ></div>
     </div>
   )
 }
