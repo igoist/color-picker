@@ -1,0 +1,74 @@
+$cm: 'cm';
+
+##{$cm}-wrap {
+  position: absolute;
+  top: 175px;
+  // left: 60px;
+  left: 360px;
+  // right: 60px;
+  width: 256px;
+  z-index: 9999;
+  cursor: pointer;
+}
+
+##{$cm} {
+  position: relative;
+  width: 100%;
+  height: 216px;
+  background-color: #33ff33;
+
+  .#{$cm}-top {
+    // width: 100%;
+    height: 32px;
+    background-color: #fff;
+  }
+
+  .#{$cm}-panel-wrap {
+    padding: 12px;
+    // width:
+    height: 152px;
+    background-color: #fff;
+
+    .#{$cm}-panel {
+      position: relative;
+      border-radius: 2px;
+      width: 100%;
+      height: 100%;
+      background-color: #00ffd0;
+      overflow: hidden;
+      box-shadow: rgba(0, 0, 0, 0.75) 0px 0px 1px 0px;
+
+      .saturation-b,
+      .saturation-w {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        bottom: 0px;
+        left: 0px;
+      }
+
+      .saturation-w {
+        background: linear-gradient(to right, #fff, rgba(255,255,255,0));
+      }
+
+      .saturation-b {
+        background: linear-gradient(to top, #000, rgba(0,0,0,0));
+      }
+
+      .picker-btn {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        border: 4px solid #fff;
+        border-radius: 50%;
+        width: 16px;
+        height: 16px;
+        background: transparent;
+        // cursor: move;
+        cursor: default;
+
+        transform: translate(-8px, -8px);
+      }
+    }
+  }
+}
