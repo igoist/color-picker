@@ -5,6 +5,8 @@
 
 import { remote, screen } from 'electron';
 
+import * as ColorCovert from './color';
+
 let currentWindow = remote.getCurrentWindow();
 
 const getCurrentScreen = () => {
@@ -18,7 +20,9 @@ const isCursorInCurrentWindow = () => {
   return x >= winX && x <= winX + width && y >= winY && y <= winY + height;
 }
 
+
 export {
   getCurrentScreen,
-  isCursorInCurrentWindow
+  isCursorInCurrentWindow,
+  ColorCovert
 }

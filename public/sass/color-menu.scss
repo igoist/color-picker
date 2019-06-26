@@ -14,7 +14,7 @@ $cm: 'cm';
 ##{$cm} {
   position: relative;
   width: 100%;
-  height: 216px;
+  height: 288px;
   background-color: #33ff33;
 
   .#{$cm}-top {
@@ -70,5 +70,15 @@ $cm: 'cm';
         transform: translate(-8px, -8px);
       }
     }
+  }
+
+  .#{$cm}-panel-bar {
+    height: 32px;
+    background-color: #005288;
+  }
+
+  .#{$cm}-panel-x {
+    height: 72px;
+    background-color: #333;
   }
 }
