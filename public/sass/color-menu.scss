@@ -6,9 +6,11 @@ $cm: 'cm';
   // left: 60px;
   left: 360px;
   // right: 60px;
+  border-radius: 4px;
   width: 256px;
   z-index: 9999;
   cursor: pointer;
+  overflow: hidden;
 }
 
 ##{$cm} {
@@ -21,6 +23,17 @@ $cm: 'cm';
     // width: 100%;
     height: 32px;
     background-color: #fff;
+  }
+
+  .hue-scrollbar .hue-picker,
+  .#{$cm}-panel-wrap .picker-btn {
+    position: absolute;
+    border: 4px solid #fff;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    background: transparent;
+    cursor: default;
   }
 
   .#{$cm}-panel-wrap {
@@ -56,17 +69,6 @@ $cm: 'cm';
       }
 
       .picker-btn {
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        border: 4px solid #fff;
-        border-radius: 50%;
-        width: 16px;
-        height: 16px;
-        background: transparent;
-        // cursor: move;
-        cursor: default;
-
         transform: translate(-8px, -8px);
       }
     }
@@ -75,10 +77,30 @@ $cm: 'cm';
   .#{$cm}-panel-bar {
     height: 32px;
     background-color: #005288;
+
+    .hue-scrollbar {
+      float: right;
+      position: relative;
+      border-radius: 4px;
+      margin: 12px;
+      width: 140px;
+      height: 10px;
+      background: linear-gradient(to right, #f00 0%, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00 100%);
+
+      .hue-picker {
+        transform: translate(-3px, -3px);
+      }
+    }
   }
 
   .#{$cm}-panel-x {
     height: 72px;
     background-color: #333;
+
+    p {
+      height: 32px;
+      line-height: 32px;
+      color: #fff;
+    }
   }
 }
