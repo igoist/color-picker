@@ -16,6 +16,7 @@ const { HSBToRGB, RGBToHEX } = ColorCovert;
  * tmpGauche: left of pickerBtn2
  * tmpH: hsb.h
  * tmpHexValue: ...
+ * tmpSwitchFlag: 标记 ClipView 是否显示，或者干脆就当开关好了
  */
 
 let hsb = {
@@ -29,6 +30,8 @@ let tmpLeft: string = '232px';
 let tmpGauche: string = '0px';
 let tmpH: number = 0;
 let tmpHexValue: string = 'ff0000';
+
+let tmpSwitchFlag: boolean = false;
 
 interface BindMoveConfig {
   el: any;
@@ -54,6 +57,7 @@ const bindMove = (config: BindMoveConfig) => {
 
 interface PropTrick {
   dispatch?: any;
+  switch: boolean;
 }
 
 const ColorMenu = (props: PropTrick) => {
@@ -179,6 +183,10 @@ const ColorMenu = (props: PropTrick) => {
           </div>
         </div>
         <div className='cm-panel-bar'>
+          <div className={ `picker-switch${ props.switch ? ' active' : '' }` } onClick={() => {
+            tmpSwitchFlag = !tmpSwitchFlag;
+            props.dispatch({ type: 'switch', flag: tmpSwitchFlag });
+          }}></div>
           <div className='color-preview'
             style={{
               backgroundColor: `#${ state.hexValue }`

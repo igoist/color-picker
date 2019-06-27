@@ -9,8 +9,9 @@ $cm: 'cm';
   border-radius: 4px;
   width: 256px;
   z-index: 9999;
-  cursor: pointer;
+  cursor: default;
   overflow: hidden;
+  box-shadow: 0 6px 12px 0 rgba(0, 0, 0, 0.2), 0 0 4px 0 rgba(0, 0, 0, 0.1);
 }
 
 ##{$cm} {
@@ -33,6 +34,7 @@ $cm: 'cm';
     width: 16px;
     height: 16px;
     background: transparent;
+    box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.2);
     cursor: default;
   }
 
@@ -77,16 +79,31 @@ $cm: 'cm';
   .#{$cm}-panel-bar {
     position: relative;
     height: 32px;
-    background-color: #005288;
+    background-color: #fdfdfd;
 
+    .picker-switch,
     .color-preview {
       position: absolute;
       top: 0;
-      left: 52px;
       margin: 4px;
-      border-radius: 50%;
       width: 24px;
       height: 24px;
+    }
+
+    .picker-switch {
+      left: 12px;
+      background-image: url(../img/icon-pickcolor.svg);
+      cursor: pointer;
+      opacity: 0.618;
+
+      &.active {
+        opacity: 1;
+      }
+    }
+
+    .color-preview {
+      left: 52px;
+      border-radius: 50%;
     }
 
     .hue-scrollbar {

@@ -38,6 +38,8 @@ getScreenSources({}, (imgSrc: any) => {
  * clipRange: 向上取整(直径 / range)
  * tmpClipData: 取色区域数据
  * tmpCenterValue: 存放取色中心点数值
+ * tmpIfShow:
+ * tmpSwitchFlag: ... 两边初始值需要相同
  */
 const body = document.body;
 const radius = 176;
@@ -50,6 +52,7 @@ let tmpTop: string = `-${ 190 }px`;
 let tmpLeft: string = `-${ 190 }px`;
 let tmpCenterValue: string = '';
 let tmpIfShow = true;
+let tmpSwitchFlag = false;
 let position: { x?: number, y?: number } = null;
 
 
@@ -154,7 +157,8 @@ const ClipView = () => {
     top: tmpTop,
     left: tmpLeft,
     value: '#FFFFFF',
-    show: tmpIfShow
+    show: tmpIfShow,
+    switch: tmpSwitchFlag
   });
 
   const reducer = (action: any) => {
@@ -165,7 +169,8 @@ const ClipView = () => {
           top: tmpTop,
           left: tmpLeft,
           value: tmpCenterValue,
-          show: true
+          show: true,
+          switch: tmpSwitchFlag
         });
         break;
       case 'hide':
@@ -174,7 +179,23 @@ const ClipView = () => {
           top: tmpTop,
           left: tmpLeft,
           value: tmpCenterValue,
-          show: false
+          show: false,
+          switch: tmpSwitchFlag
+        });
+        break;
+      case 'switch':
+        tmpSwitchFlag = action.flag;
+        if (tmpSwitchFlag) {
+          document.body.classList.add('with-clip-view');
+        } else {
+          document.body.classList.remove('with-clip-view');
+        }
+        setState({
+          top: tmpTop,
+          left: tmpLeft,
+          value: tmpCenterValue,
+          show: tmpIfShow,
+          switch: tmpSwitchFlag
         });
         break;
       default:
@@ -207,7 +228,8 @@ const ClipView = () => {
         top: tmpTop,
         left: tmpLeft,
         value: tmpCenterValue,
-        show: tmpIfShow
+        show: tmpIfShow,
+        switch: tmpSwitchFlag
       });
     }
   }
@@ -238,7 +260,7 @@ const ClipView = () => {
       <div
         className='clip-view'
         style={{
-          display: state.show ? '' : 'none',
+          display: state.switch && state.show ? '' : 'none',
           top: state.top,
           left: state.left,
           // backgroundColor: '#CCCFFF' // this line for code test
@@ -248,9 +270,11 @@ const ClipView = () => {
         <span>{ state.value }</span>
       </div>
 
-      <TmpC value={ state.value } />
+      {
+        state.switch && <TmpC value={ state.value } />
+      }
 
-      <ColorMenu dispatch={ reducer } />
+      <ColorMenu dispatch={ reducer } switch={ state.switch } />
     </div>
   )
 }
