@@ -52,7 +52,12 @@ const bindMove = (config: BindMoveConfig) => {
   });
 };
 
-const ColorMenu = () => {
+interface PropTrick {
+  dispatch?: any;
+}
+
+const ColorMenu = (props: PropTrick) => {
+  const cmWrapRef = React.useRef<HTMLDivElement>(null);
   const panelRef = React.useRef<HTMLDivElement>(null);
   const scrollbarRef = React.useRef<HTMLDivElement>(null);
 
@@ -119,6 +124,16 @@ const ColorMenu = () => {
   };
 
   React.useEffect(() => {
+    const cmWrap = cmWrapRef.current;
+
+    cmWrap.addEventListener('mouseover', () => {
+      props.dispatch({ type: 'hide' });
+    });
+
+    cmWrap.addEventListener('mouseleave', () => {
+      props.dispatch({ type: 'show' });
+    });
+
     bindMove({
       el: panelRef.current,
       handleMove: handlePickerBtnMove,
@@ -141,7 +156,7 @@ const ColorMenu = () => {
   }, []);
 
   return (
-    <div id='cm-wrap'>
+    <div id='cm-wrap' ref={ cmWrapRef }>
       <div id='cm'>
         <div className='cm-top'></div>
         <div className='cm-panel-wrap'>

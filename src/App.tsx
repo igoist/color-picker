@@ -1,7 +1,9 @@
 import * as React from 'react';
 import getScreenSources from './desktop-capturer';
 
-import { getCurrentScreen } from './utils/';
+import { getCurrentScreen } from 'Utils';
+
+import ColorMenu from './ColorMenu';
 
 let currentScreen = getCurrentScreen();
 let scaleFactor = currentScreen.scaleFactor;
@@ -43,7 +45,11 @@ const borderSize = 2;
 const range = 21;
 const clipRange = Math.ceil((2 * radius) / range);
 let tmpClipData: (string[] | null) = null;
+
+let tmpTop: string = `-${ 190 }px`;
+let tmpLeft: string = `-${ 190 }px`;
 let tmpCenterValue: string = '';
+let tmpIfShow = true;
 let position: { x?: number, y?: number } = null;
 
 
@@ -124,11 +130,61 @@ const drawPoint = (config: DrawPointConfig) => {
   ctx.restore();
 }
 
+interface HelloProps { value: any; }
+
+class TmpC extends React.Component<HelloProps> {
+  constructor(props: any) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <div className='tmp-cb'
+        style={{ backgroundColor: this.props.value }}
+      >
+      </div>
+    )
+  }
+}
 
 const ClipView = () => {
   const cE = React.useRef(null);
 
-  const [state, setState] = React.useState({ top: `-${ 190 }px`, left: `-${ 190 }px`, value: '#FFFFFF' });
+  const [state, setState] = React.useState({
+    top: tmpTop,
+    left: tmpLeft,
+    value: '#FFFFFF',
+    show: tmpIfShow
+  });
+
+  const reducer = (action: any) => {
+    switch (action.type) {
+      case 'show':
+        tmpIfShow = true;
+        setState({
+          top: tmpTop,
+          left: tmpLeft,
+          value: tmpCenterValue,
+          show: true
+        });
+        break;
+      case 'hide':
+        tmpIfShow = false;
+        setState({
+          top: tmpTop,
+          left: tmpLeft,
+          value: tmpCenterValue,
+          show: false
+        });
+        break;
+      default:
+        console.log('error in reducer ClipView');
+        throw new Error;
+    }
+  }
+
+
+
 
   const onMouseMove = (e: any) => {
     position = {
@@ -142,13 +198,16 @@ const ClipView = () => {
         imgData: tmpCanvasData,
       });
 
+      tmpTop = `${ position.y - 80 - borderSize - 9 }px`;
+      tmpLeft = `${ position.x - 80 - borderSize - 9 }px`;
       // 不可以在 drawPoint 设置 tmpCenterValue
       tmpCenterValue = tmpClipData[~~(tmpClipData.length / 2)].toUpperCase();
 
       setState({
-        top: `${ position.y - 80 - borderSize - 9 }px`,
-        left: `${ position.x - 80 - borderSize - 9 }px`,
-        value: tmpCenterValue
+        top: tmpTop,
+        left: tmpLeft,
+        value: tmpCenterValue,
+        show: tmpIfShow
       });
     }
   }
@@ -179,6 +238,7 @@ const ClipView = () => {
       <div
         className='clip-view'
         style={{
+          display: state.show ? '' : 'none',
           top: state.top,
           left: state.left,
           // backgroundColor: '#CCCFFF' // this line for code test
@@ -188,9 +248,9 @@ const ClipView = () => {
         <span>{ state.value }</span>
       </div>
 
-      <div className='tmp-cb'
-        style={{ backgroundColor: state.value }}
-      ></div>
+      <TmpC value={ state.value } />
+
+      <ColorMenu dispatch={ reducer } />
     </div>
   )
 }
