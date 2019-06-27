@@ -20,15 +20,15 @@ const { HSBToRGB, RGBToHEX } = ColorCovert;
 
 let hsb = {
   h: 0,
-  s: 0,
-  b: 0
+  s: 100,
+  b: 100
 };
 
 let tmpTop: string = '0px';
-let tmpLeft: string = '0px';
+let tmpLeft: string = '232px';
 let tmpGauche: string = '0px';
 let tmpH: number = 0;
-let tmpHexValue: string = 'ffffff';
+let tmpHexValue: string = 'ff0000';
 
 interface BindMoveConfig {
   el: any;
@@ -164,6 +164,11 @@ const ColorMenu = () => {
           </div>
         </div>
         <div className='cm-panel-bar'>
+          <div className='color-preview'
+            style={{
+              backgroundColor: `#${ state.hexValue }`
+            }}
+          ></div>
           <div className='hue-scrollbar' ref={ scrollbarRef }>
             <div className='hue-picker'
               style={{

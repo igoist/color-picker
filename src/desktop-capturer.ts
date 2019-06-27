@@ -1,5 +1,5 @@
-const { getCurrentScreen } = require('./utils');
-const { desktopCapturer } = require('electron');
+import { getCurrentScreen } from 'Utils';
+import { desktopCapturer } from 'electron';
 
 const curScreen = getCurrentScreen();
 

@@ -75,8 +75,19 @@ $cm: 'cm';
   }
 
   .#{$cm}-panel-bar {
+    position: relative;
     height: 32px;
     background-color: #005288;
+
+    .color-preview {
+      position: absolute;
+      top: 0;
+      left: 52px;
+      margin: 4px;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+    }
 
     .hue-scrollbar {
       float: right;
