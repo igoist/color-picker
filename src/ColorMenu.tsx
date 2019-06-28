@@ -11,6 +11,8 @@ const { HSBToRGB, RGBToHEX } = ColorCovert;
  * 所以特地设定几个 tmp 寄存变量
  *
  * hsb: 临时存放 hsb
+ * tmpCMTop:
+ * tmpCMLeft: 两者跟下面两个稍微有点区别，最后 setState 时候补上 'px'
  * tmpTop: top of pickerBtn1
  * tmpLeft: left of pickerBtn1
  * tmpGauche: left of pickerBtn2
@@ -25,6 +27,8 @@ let hsb = {
   b: 100
 };
 
+let tmpCMTop: number = 175;
+let tmpCMLeft: number = 360;
 let tmpTop: string = '0px';
 let tmpLeft: string = '232px';
 let tmpGauche: string = '0px';
@@ -33,22 +37,46 @@ let tmpHexValue: string = 'ff0000';
 
 let tmpSwitchFlag: boolean = false;
 
+interface StartPoint {
+  x: number;
+  y: number;
+  moved: boolean;
+}
+
+let tmpStartPoint: StartPoint = {
+  x: 0,
+  y: 0,
+  moved: false
+};
+
 interface BindMoveConfig {
   el: any;
-  flag?: Boolean;
   handleMove: any;
+  flag?: string;
 }
 
 const bindMove = (config: BindMoveConfig) => {
-  const { el, handleMove } = config;
+  const { el, handleMove, flag } = config;
   el.addEventListener('mousedown', (e: MouseEvent) => {
-    handleMove(e);
+    if (!flag) {
+      handleMove(e);
+    } else if (flag === 'HandleColorMenuDrag') {
+      tmpStartPoint = {
+        x: e.pageX,
+        y: e.pageY,
+        moved: false
+      };
+    }
 
     document.addEventListener('mousemove', handleMove);
 
     const mouseUp = (e: MouseEvent) => {
       document.removeEventListener('mousemove', handleMove);
       el.removeEventListener('mouseup', mouseUp);
+
+      if (flag === 'HandleColorMenuDrag') {
+        tmpStartPoint.moved = false;
+      }
     };
 
     document.addEventListener('mouseup', mouseUp);
@@ -62,15 +90,16 @@ interface PropTrick {
 
 const ColorMenu = (props: PropTrick) => {
   const cmWrapRef = React.useRef<HTMLDivElement>(null);
+  const cmTopRef = React.useRef<HTMLDivElement>(null);
   const panelRef = React.useRef<HTMLDivElement>(null);
   const scrollbarRef = React.useRef<HTMLDivElement>(null);
 
-  let w: number = 0;
-  let h: number = 0;
   let rect: (ClientRect | DOMRect | null) = null;
   let rectScrollbar: (ClientRect | DOMRect | null) = null;
 
   const [state, setState] = React.useState({
+    cmTop: tmpCMTop + 'px',
+    cmLeft: tmpCMLeft + 'px',
     top: tmpTop,
     left: tmpLeft,
     gauche: tmpGauche,
@@ -79,6 +108,13 @@ const ColorMenu = (props: PropTrick) => {
   });
 
   const handlePickerBtnMove = (e: MouseEvent) => {
+    const panel = panelRef.current;
+    let w = panel.offsetWidth;
+    let h = panel.offsetHeight;
+
+    // it would change every time the scrolling position changes, but we can use it here
+    rect = panel.getBoundingClientRect();
+
     let t: number = e.pageY - rect.top;
     let l: number = e.pageX - rect.left;
 
@@ -96,6 +132,8 @@ const ColorMenu = (props: PropTrick) => {
     tmpHexValue = RGBToHEX(HSBToRGB(hsb));
 
     setState({
+      cmTop: tmpCMTop + 'px',
+      cmLeft: tmpCMLeft + 'px',
       top: tmpTop,
       left: tmpLeft,
       gauche: tmpGauche,
@@ -105,6 +143,9 @@ const ColorMenu = (props: PropTrick) => {
   };
 
   const handleHueBtnMove = (e: MouseEvent) => {
+    const scrollbar = scrollbarRef.current;
+    rectScrollbar = scrollbar.getBoundingClientRect();
+
     let w = rectScrollbar.width - 10; // trick value
 
     let l: number = (e.pageX - 5) - rectScrollbar.left; // 5 is another trick
@@ -119,6 +160,38 @@ const ColorMenu = (props: PropTrick) => {
     tmpHexValue = RGBToHEX(HSBToRGB(hsb));
 
     setState({
+      cmTop: tmpCMTop + 'px',
+      cmLeft: tmpCMLeft + 'px',
+      top: tmpTop,
+      left: tmpLeft,
+      gauche: tmpGauche,
+      h: tmpH,
+      hexValue: tmpHexValue
+    });
+  };
+
+  const handleDrag = (e: MouseEvent) => {
+    let { pageX, pageY } = e;
+
+    if (!tmpStartPoint.moved) {
+      if (Math.abs(tmpStartPoint.x - pageX) > 2 || Math.abs(tmpStartPoint.y - pageY) > 2) {
+        tmpStartPoint.moved = true;
+      }
+    }
+
+    if (!tmpStartPoint.moved) {
+      return ;
+    }
+
+    tmpCMTop += pageY - tmpStartPoint.y;
+    tmpCMLeft += pageX - tmpStartPoint.x;
+
+    tmpStartPoint.y = pageY;
+    tmpStartPoint.x = pageX;
+
+    setState({
+      cmTop: tmpCMTop + 'px',
+      cmLeft: tmpCMLeft + 'px',
       top: tmpTop,
       left: tmpLeft,
       gauche: tmpGauche,
@@ -139,6 +212,12 @@ const ColorMenu = (props: PropTrick) => {
     });
 
     bindMove({
+      el: cmTopRef.current,
+      handleMove: handleDrag,
+      flag: 'HandleColorMenuDrag'
+    })
+
+    bindMove({
       el: panelRef.current,
       handleMove: handlePickerBtnMove,
     });
@@ -147,22 +226,18 @@ const ColorMenu = (props: PropTrick) => {
       el: scrollbarRef.current,
       handleMove: handleHueBtnMove,
     });
-
-    const panel = panelRef.current;
-    w = panel.offsetWidth;
-    h = panel.offsetHeight;
-
-    // it would change every time the scrolling position changes, but we can use it here
-    rect = panel.getBoundingClientRect();
-
-    const scrollbar = scrollbarRef.current;
-    rectScrollbar = scrollbar.getBoundingClientRect();
   }, []);
 
   return (
-    <div id='cm-wrap' ref={ cmWrapRef }>
+    <div id='cm-wrap'
+      style={{
+        top: state.cmTop,
+        left: state.cmLeft
+      }}
+      ref={ cmWrapRef }
+    >
       <div id='cm'>
-        <div className='cm-top'></div>
+        <div className='cm-top' ref={ cmTopRef }></div>
         <div className='cm-panel-wrap'>
           <div
             className='cm-panel'
