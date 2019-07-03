@@ -47,18 +47,22 @@ const HSBToRGB = (hsb: HSB): RGB => {
 };
 
 const RGBToHEX = (rgb: RGB): string => {
-  let hex = [
-    rgb.r.toString(16),
-    rgb.g.toString(16),
-    rgb.b.toString(16)
-  ];
-  hex.map(function(str,i){
-    if (str.length == 1) {
-      hex[i] = '0' + str;
-    }
-  });
-
-  return hex.join('');
+  try {
+    let hex = [
+      rgb.r.toString(16),
+      rgb.g.toString(16),
+      rgb.b.toString(16)
+    ];
+    hex.map(function(str,i){
+      if (str.length == 1) {
+        hex[i] = '0' + str;
+      }
+    });
+    return hex.join('');
+  } catch (err) {
+    // cursor overflow, and the r g b values are undefined
+    return '000000';
+  }
 };
 
 const HEXToRGB = (hex: string): RGB => {
