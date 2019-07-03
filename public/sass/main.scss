@@ -38,6 +38,7 @@ $borderSize: 2px;
   border-radius:  50%;
   width: $size + $borderSize * 4;
   height: $size + $borderSize * 4;
+  box-shadow: 0 1px 12px 0 rgba(0, 0, 0, 0.2), 0 0 4px 0 rgba(0, 0, 0, 0.1);
 
   canvas {
     border-radius:  50%;

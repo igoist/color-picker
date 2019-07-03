@@ -1,36 +1,43 @@
 import * as React from 'react';
+import { ipcRenderer } from 'electron';
 import getScreenSources from './desktop-capturer';
 
-import { getCurrentScreen } from 'Utils';
+import { getCurrentScreen, ColorCovert } from 'Utils';
 
 import ColorMenu from './ColorMenu';
 
 let currentScreen = getCurrentScreen();
 let scaleFactor = currentScreen.scaleFactor;
-let screenWidth = currentScreen.bounds.width;
-let screenHeight = currentScreen.bounds.height;
+// let screenWidth = currentScreen.bounds.width;
+// let screenHeight = currentScreen.bounds.height;
 
 let tmpImg = new Image();
 let tmpCanvas: HTMLCanvasElement = document.getElementById('tmp') as HTMLCanvasElement;
 let tmpCanvasData: any = null;
 
-getScreenSources({}, (imgSrc: any) => {
 
-  let bgImg = document.getElementById('bgImg');
+const setTmpCanvasData = () => {
+  getScreenSources({}, (imgSrc: any) => {
 
-  bgImg.style.backgroundImage = `url(${ imgSrc })`;
-  bgImg.style.backgroundSize = `${ screenWidth }px ${ screenHeight }px`;
+    // let bgImg = document.getElementById('bgImg');
 
-  tmpImg.src = imgSrc;
-  tmpImg.addEventListener('load', function() {
-    tmpCanvas.width = tmpImg.width;
-    tmpCanvas.height = tmpImg.height;
-    let tmpContext: any = tmpCanvas.getContext('2d');
+    // bgImg.style.backgroundImage = `url(${ imgSrc })`;
+    // bgImg.style.backgroundSize = `${ screenWidth }px ${ screenHeight }px`;
 
-    tmpContext.drawImage(tmpImg, 0, 0, tmpImg.width, tmpImg.height);
-    tmpCanvasData = tmpContext.getImageData(0, 0, tmpImg.width, tmpImg.height);
-  }, false);
-});
+    tmpImg.src = imgSrc;
+    tmpImg.addEventListener('load', function() {
+      tmpCanvas.width = tmpImg.width;
+      tmpCanvas.height = tmpImg.height;
+      let tmpContext: any = tmpCanvas.getContext('2d');
+
+      tmpContext.drawImage(tmpImg, 0, 0, tmpImg.width, tmpImg.height);
+      tmpCanvasData = tmpContext.getImageData(0, 0, tmpImg.width, tmpImg.height);
+    }, false);
+  });
+};
+
+setTmpCanvasData();
+
 
 /**
  * radius: ClipView 中 canvas 实际半径（统一设置为 dp = 2）
@@ -46,10 +53,19 @@ const radius = 176;
 const borderSize = 2;
 const range = 21;
 const clipRange = Math.ceil((2 * radius) / range);
-let tmpClipData: (string[] | null) = null;
+
+interface RGB {
+  r: number;
+  g: number;
+  b: number;
+  a?: number;
+}
+
+let tmpClipData: (RGB[] | null) = null;
 
 let tmpTop: string = `-${ 190 }px`;
 let tmpLeft: string = `-${ 190 }px`;
+let tmpColorObj: (RGB | null) = null;
 let tmpCenterValue: string = '';
 let tmpIfShow = true;
 let tmpSwitchFlag = false;
@@ -78,8 +94,14 @@ const getClipData: any = (config: GetClipDataConfig) => {
       r = data[index * 4 + 0];
       g = data[index * 4 + 1];
       b = data[index * 4 + 2];
-      a = data[index * 4 + 3] / 255;
-      clipData.push(`rgba(${r},${g},${b},${a})`);
+      // a = data[index * 4 + 3] / 255;
+      // clipData.push(`rgba(${r},${g},${b},${a})`);
+      clipData.push({
+        r,
+        g,
+        b,
+        // a
+      });
     }
   }
 
@@ -111,7 +133,7 @@ const drawPoint = (config: DrawPointConfig) => {
     } else {
       ctx.lineWidth = 0.6;
       ctx.strokeStyle = 'rgba(255,255,255,0.618)';
-      ctx.fillStyle = clipData[i];
+      ctx.fillStyle = '#' + ColorCovert.RGBToHEX(clipData[i]);
       ctx.fillRect(x * range + resize, y * range + resize, range, range);
       ctx.strokeRect(x * range + resize, y * range + resize, range, range);
       ctx.restore();
@@ -123,7 +145,7 @@ const drawPoint = (config: DrawPointConfig) => {
   }
   ctx.lineWidth = 6;
   ctx.strokeStyle = '#fff';
-  ctx.fillStyle = clipData[current];
+  ctx.fillStyle = '#' + ColorCovert.RGBToHEX(clipData[current]);
   ctx.fillRect(cp.x, cp.y, range, range);
   ctx.strokeRect(cp.x, cp.y, range, range);
   ctx.restore();
@@ -204,9 +226,6 @@ const ClipView = () => {
     }
   }
 
-
-
-
   const onMouseMove = (e: any) => {
     position = {
       x: e.clientX - body.offsetLeft,
@@ -222,7 +241,9 @@ const ClipView = () => {
       tmpTop = `${ position.y - 80 - borderSize - 9 }px`;
       tmpLeft = `${ position.x - 80 - borderSize - 9 }px`;
       // 不可以在 drawPoint 设置 tmpCenterValue
-      tmpCenterValue = tmpClipData[~~(tmpClipData.length / 2)].toUpperCase();
+      // tmpCenterValue = tmpClipData[~~(tmpClipData.length / 2)].toUpperCase();
+      tmpColorObj = tmpClipData[~~(tmpClipData.length / 2)];
+      tmpCenterValue = `#${ ColorCovert.RGBToHEX(tmpColorObj).toUpperCase() }`;
 
       setState({
         top: tmpTop,
@@ -241,8 +262,12 @@ const ClipView = () => {
     }
 
     body.addEventListener('mousemove', onMouseMove);
+
     body.addEventListener('click', () => {
-      console.log('click: ', tmpCenterValue);
+      console.log('click: ', tmpColorObj);
+      if (tmpSwitchFlag && tmpIfShow) {
+        ipcRenderer.send('clip-view-send-value', { colorObj: tmpColorObj });
+      }
     });
   }, []);
 
@@ -271,7 +296,7 @@ const ClipView = () => {
       </div>
 
       {
-        state.switch && <TmpC value={ state.value } />
+        state.switch && state.show && <TmpC value={ state.value } />
       }
 
       <ColorMenu dispatch={ reducer } switch={ state.switch } />

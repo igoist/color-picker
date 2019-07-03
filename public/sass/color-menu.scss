@@ -17,9 +17,20 @@ $cm: 'cm';
   background-color: #33ff33;
 
   .#{$cm}-top {
+    padding: 10px 12px;
+
     height: 32px;
     background-color: #fff;
     cursor: move;
+
+    .item {
+      float: left;
+      margin-right: 8px;
+      border-radius: 50%;
+      width: 12px;
+      height: 12px;
+      background-color: #ff5a52;
+    }
   }
 
   .hue-scrollbar .hue-picker,

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { ipcRenderer } from 'electron';
 import { ColorCovert } from 'Utils';
 
 const { HSBToRGB, RGBToHEX } = ColorCovert;
@@ -109,11 +110,11 @@ const ColorMenu = (props: PropTrick) => {
 
   const handlePickerBtnMove = (e: MouseEvent) => {
     const panel = panelRef.current;
-    let w = panel.offsetWidth;
-    let h = panel.offsetHeight;
 
     // it would change every time the scrolling position changes, but we can use it here
     rect = panel.getBoundingClientRect();
+    let w = rect.width;
+    let h = rect.height;
 
     let t: number = e.pageY - rect.top;
     let l: number = e.pageX - rect.left;
@@ -226,6 +227,42 @@ const ColorMenu = (props: PropTrick) => {
       el: scrollbarRef.current,
       handleMove: handleHueBtnMove,
     });
+
+    ipcRenderer.on('repeating-clip-view-value', (event: any, arg: any) => {
+      const scrollbar = scrollbarRef.current;
+      rectScrollbar = scrollbar.getBoundingClientRect();
+      let w = rectScrollbar.width - 10;
+
+      let tmpHSBObj = ColorCovert.RGBToHSB(arg.colorObj);
+      hsb = tmpHSBObj;
+
+      tmpH = hsb.h;
+      tmpGauche = tmpH / 360 * w + 'px';
+      tmpHexValue = RGBToHEX(HSBToRGB(hsb));
+
+
+      const panel = panelRef.current;
+
+      rect = panel.getBoundingClientRect();
+      w = rect.width;
+      let h = rect.height;
+
+      let t = Math.ceil(h - hsb.b * h / 100);
+      let l = Math.ceil(hsb.s * w / 100);
+
+      tmpTop = t + 'px';
+      tmpLeft = l + 'px';
+
+      setState({
+        cmTop: tmpCMTop + 'px',
+        cmLeft: tmpCMLeft + 'px',
+        top: tmpTop,
+        left: tmpLeft,
+        gauche: tmpGauche,
+        h: tmpH,
+        hexValue: tmpHexValue
+      });
+    });
   }, []);
 
   return (
@@ -237,7 +274,11 @@ const ColorMenu = (props: PropTrick) => {
       ref={ cmWrapRef }
     >
       <div id='cm'>
-        <div className='cm-top' ref={ cmTopRef }></div>
+        <div className='cm-top' ref={ cmTopRef }>
+          <div className='item'></div>
+          <div className='item'></div>
+          <div className='item'></div>
+        </div>
         <div className='cm-panel-wrap'>
           <div
             className='cm-panel'

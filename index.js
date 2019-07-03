@@ -126,7 +126,10 @@ module.exports = {
     console.log('ColorPicker InitPlugin');
     globalShortcut.register('CmdOrCtrl+Shift+A', colorPicker);
 
-    ipcMain.on('color-picker', colorPicker);
+    ipcMain.on('clip-view-send-value', (event, arg) => {
+      console.log(arg);
+      event.sender.send('repeating-clip-view-value', arg);
+    })
   },
   initTray: () => {
 
