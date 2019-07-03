@@ -227,6 +227,10 @@ const ClipView = () => {
   }
 
   const onMouseMove = (e: any) => {
+    if (!tmpSwitchFlag || !tmpIfShow) {
+      return ;
+    }
+
     position = {
       x: e.clientX - body.offsetLeft,
       y: e.clientY - body.offsetTop
@@ -288,7 +292,6 @@ const ClipView = () => {
           display: state.switch && state.show ? '' : 'none',
           top: state.top,
           left: state.left,
-          // backgroundColor: '#CCCFFF' // this line for code test
         }}
       >
         <canvas ref={ cE } width={ radius * 2 } height={ radius * 2 }></canvas>

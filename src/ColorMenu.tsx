@@ -12,6 +12,7 @@ const { HSBToRGB, RGBToHEX } = ColorCovert;
  * 所以特地设定几个 tmp 寄存变量
  *
  * hsb: 临时存放 hsb
+ * rgb: ...
  * tmpCMTop:
  * tmpCMLeft: 两者跟下面两个稍微有点区别，最后 setState 时候补上 'px'
  * tmpTop: top of pickerBtn1
@@ -20,6 +21,7 @@ const { HSBToRGB, RGBToHEX } = ColorCovert;
  * tmpH: hsb.h
  * tmpHexValue: ...
  * tmpSwitchFlag: 标记 ClipView 是否显示，或者干脆就当开关好了
+ * tmpMode: RGB or HSB or ...
  */
 
 let hsb = {
@@ -27,6 +29,14 @@ let hsb = {
   s: 100,
   b: 100
 };
+
+interface RGB {
+  r: number;
+  g: number;
+  b: number;
+}
+
+let rgb: RGB = ColorCovert.HSBToRGB(hsb);
 
 let tmpCMTop: number = 175;
 let tmpCMLeft: number = 360;
@@ -37,6 +47,7 @@ let tmpH: number = 0;
 let tmpHexValue: string = 'ff0000';
 
 let tmpSwitchFlag: boolean = false;
+let tmpMode: number = 1;
 
 interface StartPoint {
   x: number;
@@ -105,7 +116,8 @@ const ColorMenu = (props: PropTrick) => {
     left: tmpLeft,
     gauche: tmpGauche,
     h: tmpH,
-    hexValue: tmpHexValue
+    hexValue: tmpHexValue,
+    mode: tmpMode
   });
 
   const handlePickerBtnMove = (e: MouseEvent) => {
@@ -130,7 +142,8 @@ const ColorMenu = (props: PropTrick) => {
 
     tmpTop = t + 'px';
     tmpLeft = l + 'px';
-    tmpHexValue = RGBToHEX(HSBToRGB(hsb));
+    rgb = HSBToRGB(hsb);
+    tmpHexValue = RGBToHEX(rgb);
 
     setState({
       cmTop: tmpCMTop + 'px',
@@ -139,7 +152,8 @@ const ColorMenu = (props: PropTrick) => {
       left: tmpLeft,
       gauche: tmpGauche,
       h: tmpH,
-      hexValue: tmpHexValue
+      hexValue: tmpHexValue,
+      mode: tmpMode
     });
   };
 
@@ -158,7 +172,8 @@ const ColorMenu = (props: PropTrick) => {
 
     tmpGauche = l + 'px';
     tmpH = hsb.h;
-    tmpHexValue = RGBToHEX(HSBToRGB(hsb));
+    rgb = HSBToRGB(hsb);
+    tmpHexValue = RGBToHEX(rgb);
 
     setState({
       cmTop: tmpCMTop + 'px',
@@ -167,7 +182,8 @@ const ColorMenu = (props: PropTrick) => {
       left: tmpLeft,
       gauche: tmpGauche,
       h: tmpH,
-      hexValue: tmpHexValue
+      hexValue: tmpHexValue,
+      mode: tmpMode
     });
   };
 
@@ -197,7 +213,8 @@ const ColorMenu = (props: PropTrick) => {
       left: tmpLeft,
       gauche: tmpGauche,
       h: tmpH,
-      hexValue: tmpHexValue
+      hexValue: tmpHexValue,
+      mode: tmpMode
     });
   };
 
@@ -238,7 +255,8 @@ const ColorMenu = (props: PropTrick) => {
 
       tmpH = hsb.h;
       tmpGauche = tmpH / 360 * w + 'px';
-      tmpHexValue = RGBToHEX(HSBToRGB(hsb));
+      rgb = HSBToRGB(hsb);
+      tmpHexValue = RGBToHEX(rgb);
 
 
       const panel = panelRef.current;
@@ -260,10 +278,36 @@ const ColorMenu = (props: PropTrick) => {
         left: tmpLeft,
         gauche: tmpGauche,
         h: tmpH,
-        hexValue: tmpHexValue
+        hexValue: tmpHexValue,
+        mode: tmpMode
       });
     });
   }, []);
+
+  interface Action {
+    type: string;
+    value: number;
+  }
+
+  const reducer = (action: Action) => {
+    switch (action.type) {
+      case 'mode':
+        tmpMode = action.value;
+        setState({
+          cmTop: tmpCMTop + 'px',
+          cmLeft: tmpCMLeft + 'px',
+          top: tmpTop,
+          left: tmpLeft,
+          gauche: tmpGauche,
+          h: tmpH,
+          hexValue: tmpHexValue,
+          mode: tmpMode
+        });
+        break;
+      case 'default':
+        break;
+    }
+  };
 
   return (
     <div id='cm-wrap'
@@ -316,9 +360,62 @@ const ColorMenu = (props: PropTrick) => {
             ></div>
           </div>
         </div>
-        <div className='cm-panel-x'>
-          <p>#{ state.hexValue }</p>
-        </div>
+        {
+          state.mode === 0 && (
+            <div className='cm-panel-x'>
+              <div className='cm-panel-input-group'>
+                <input type='text' value={ '#' + state.hexValue.toUpperCase() } />
+                <p>HEX</p>
+              </div>
+              <div className='cm-panel-input-group'>
+                <input type='text' value={ Math.ceil(rgb.r) } />
+                <p>R</p>
+              </div>
+              <div className='cm-panel-input-group'>
+                <input type='text' value={ Math.ceil(rgb.g) } />
+                <p>G</p>
+              </div>
+              <div className='cm-panel-input-group'>
+                <input type='text' value={ Math.ceil(rgb.b) } />
+                <p>B</p>
+              </div>
+              <div
+                className='cm-panel-mode-toggle-btn btn bounce'
+                onClick={() => {
+                  reducer({ type: 'mode', value: 1 });
+                }}
+              ></div>
+            </div>
+          )
+        }
+        {
+          state.mode === 1 && (
+            <div className='cm-panel-x'>
+              <div className='cm-panel-input-group'>
+                <input type='text' value={ '#' + state.hexValue.toUpperCase() } />
+                <p>HEX</p>
+              </div>
+              <div className='cm-panel-input-group'>
+                <input type='text' value={ Math.ceil(hsb.h) } />
+                <p>H</p>
+              </div>
+              <div className='cm-panel-input-group'>
+                <input type='text' value={ Math.ceil(hsb.s) } />
+                <p>S</p>
+              </div>
+              <div className='cm-panel-input-group'>
+                <input type='text' value={ Math.ceil(hsb.b) } />
+                <p>B</p>
+              </div>
+              <div
+                className='cm-panel-mode-toggle-btn btn bounce'
+                onClick={() => {
+                  reducer({ type: 'mode', value: 0 });
+                }}
+              ></div>
+            </div>
+          )
+        }
       </div>
     </div>
   );
