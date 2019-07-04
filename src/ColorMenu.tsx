@@ -51,6 +51,20 @@ let tmpHistoryArr: RGB[] = [];
 let tmpSwitchFlag: boolean = false;
 let tmpMode: number = 1;
 
+const returnState = () => {
+  return {
+    cmTop: tmpCMTop + 'px',
+    cmLeft: tmpCMLeft + 'px',
+    top: tmpTop,
+    left: tmpLeft,
+    gauche: tmpGauche,
+    h: tmpH,
+    hexValue: tmpHexValue,
+    historyArr: tmpHistoryArr,
+    mode: tmpMode
+  };
+};
+
 interface StartPoint {
   x: number;
   y: number;
@@ -116,17 +130,7 @@ const ColorMenu = (props: PropTrick) => {
   let rect: (ClientRect | DOMRect | null) = null;
   let rectScrollbar: (ClientRect | DOMRect | null) = null;
 
-  const [state, setState] = React.useState({
-    cmTop: tmpCMTop + 'px',
-    cmLeft: tmpCMLeft + 'px',
-    top: tmpTop,
-    left: tmpLeft,
-    gauche: tmpGauche,
-    h: tmpH,
-    hexValue: tmpHexValue,
-    historyArr: tmpHistoryArr,
-    mode: tmpMode
-  });
+  const [state, setState] = React.useState(returnState());
 
   const handlePickerBtnMove = (e: MouseEvent) => {
     const panel = panelRef.current;
@@ -153,17 +157,7 @@ const ColorMenu = (props: PropTrick) => {
     rgb = HSBToRGB(hsb);
     tmpHexValue = RGBToHEX(rgb);
 
-    setState({
-      cmTop: tmpCMTop + 'px',
-      cmLeft: tmpCMLeft + 'px',
-      top: tmpTop,
-      left: tmpLeft,
-      gauche: tmpGauche,
-      h: tmpH,
-      hexValue: tmpHexValue,
-      historyArr: tmpHistoryArr,
-      mode: tmpMode
-    });
+    setState(returnState());
   };
 
   const handleHueBtnMove = (e: MouseEvent) => {
@@ -184,17 +178,7 @@ const ColorMenu = (props: PropTrick) => {
     rgb = HSBToRGB(hsb);
     tmpHexValue = RGBToHEX(rgb);
 
-    setState({
-      cmTop: tmpCMTop + 'px',
-      cmLeft: tmpCMLeft + 'px',
-      top: tmpTop,
-      left: tmpLeft,
-      gauche: tmpGauche,
-      h: tmpH,
-      hexValue: tmpHexValue,
-      historyArr: tmpHistoryArr,
-      mode: tmpMode
-    });
+    setState(returnState());
   };
 
   const handleDrag = (e: MouseEvent) => {
@@ -216,17 +200,7 @@ const ColorMenu = (props: PropTrick) => {
     tmpStartPoint.y = pageY;
     tmpStartPoint.x = pageX;
 
-    setState({
-      cmTop: tmpCMTop + 'px',
-      cmLeft: tmpCMLeft + 'px',
-      top: tmpTop,
-      left: tmpLeft,
-      gauche: tmpGauche,
-      h: tmpH,
-      hexValue: tmpHexValue,
-      historyArr: tmpHistoryArr,
-      mode: tmpMode
-    });
+    setState(returnState());
   };
 
   React.useEffect(() => {
@@ -288,17 +262,7 @@ const ColorMenu = (props: PropTrick) => {
         tmpHistoryArr.pop();
       }
 
-      setState({
-        cmTop: tmpCMTop + 'px',
-        cmLeft: tmpCMLeft + 'px',
-        top: tmpTop,
-        left: tmpLeft,
-        gauche: tmpGauche,
-        h: tmpH,
-        hexValue: tmpHexValue,
-        historyArr: tmpHistoryArr,
-        mode: tmpMode
-      });
+      setState(returnState());
     });
 
     ipcRenderer.on('color-picker-prepare-exit', (event: any, arg: any) => {
@@ -308,17 +272,7 @@ const ColorMenu = (props: PropTrick) => {
     ipcRenderer.on('color-picker-update-history', (event: any, arg: any) => {
       tmpHistoryArr = arg;
 
-      setState({
-        cmTop: tmpCMTop + 'px',
-        cmLeft: tmpCMLeft + 'px',
-        top: tmpTop,
-        left: tmpLeft,
-        gauche: tmpGauche,
-        h: tmpH,
-        hexValue: tmpHexValue,
-        historyArr: tmpHistoryArr,
-        mode: tmpMode
-      });
+      setState(returnState());
     });
 
     ipcRenderer.send('color-picker-init-complete');
@@ -333,17 +287,7 @@ const ColorMenu = (props: PropTrick) => {
     switch (action.type) {
       case 'mode':
         tmpMode = action.value;
-        setState({
-          cmTop: tmpCMTop + 'px',
-          cmLeft: tmpCMLeft + 'px',
-          top: tmpTop,
-          left: tmpLeft,
-          gauche: tmpGauche,
-          h: tmpH,
-          hexValue: tmpHexValue,
-          historyArr: tmpHistoryArr,
-          mode: tmpMode
-        });
+        setState(returnState());
         break;
       case 'default':
         break;

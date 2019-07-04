@@ -66,9 +66,20 @@ let tmpClipData: (RGB[] | null) = null;
 let tmpTop: string = `-${ 190 }px`;
 let tmpLeft: string = `-${ 190 }px`;
 let tmpColorObj: (RGB | null) = null;
-let tmpCenterValue: string = '';
+let tmpCenterValue: string = '#FFFFFF';
 let tmpIfShow = true;
 let tmpSwitchFlag = false;
+
+const returnState = () => {
+  return {
+    top: tmpTop,
+    left: tmpLeft,
+    value: tmpCenterValue,
+    show: tmpIfShow,
+    switch: tmpSwitchFlag
+  };
+};
+
 let position: { x?: number, y?: number } = null;
 
 
@@ -110,7 +121,7 @@ const getClipData: any = (config: GetClipDataConfig) => {
 
 interface DrawPointConfig {
   canvasElement: any;
-  clipData: any; //string[];
+  clipData: RGB[];
 }
 
 const drawPoint = (config: DrawPointConfig) => {
@@ -175,35 +186,17 @@ class TmpC extends React.Component<HelloProps> {
 const ClipView = () => {
   const cE = React.useRef(null);
 
-  const [state, setState] = React.useState({
-    top: tmpTop,
-    left: tmpLeft,
-    value: '#FFFFFF',
-    show: tmpIfShow,
-    switch: tmpSwitchFlag
-  });
+  const [state, setState] = React.useState(returnState());
 
   const reducer = (action: any) => {
     switch (action.type) {
       case 'show':
         tmpIfShow = true;
-        setState({
-          top: tmpTop,
-          left: tmpLeft,
-          value: tmpCenterValue,
-          show: true,
-          switch: tmpSwitchFlag
-        });
+        setState(returnState());
         break;
       case 'hide':
         tmpIfShow = false;
-        setState({
-          top: tmpTop,
-          left: tmpLeft,
-          value: tmpCenterValue,
-          show: false,
-          switch: tmpSwitchFlag
-        });
+        setState(returnState());
         break;
       case 'switch':
         tmpSwitchFlag = action.flag;
@@ -212,13 +205,7 @@ const ClipView = () => {
         } else {
           document.body.classList.remove('with-clip-view');
         }
-        setState({
-          top: tmpTop,
-          left: tmpLeft,
-          value: tmpCenterValue,
-          show: tmpIfShow,
-          switch: tmpSwitchFlag
-        });
+        setState(returnState());
         break;
       default:
         console.log('error in reducer ClipView');
@@ -249,13 +236,7 @@ const ClipView = () => {
       tmpColorObj = tmpClipData[~~(tmpClipData.length / 2)];
       tmpCenterValue = `#${ ColorCovert.RGBToHEX(tmpColorObj).toUpperCase() }`;
 
-      setState({
-        top: tmpTop,
-        left: tmpLeft,
-        value: tmpCenterValue,
-        show: tmpIfShow,
-        switch: tmpSwitchFlag
-      });
+      setState(returnState());
     }
   }
 
@@ -271,6 +252,10 @@ const ClipView = () => {
       console.log('click: ', tmpColorObj);
       if (tmpSwitchFlag && tmpIfShow) {
         ipcRenderer.send('clip-view-send-value', { colorObj: tmpColorObj });
+
+        // picker the color and switch off the ClipView
+        tmpSwitchFlag = false;
+        setState(returnState());
       }
     });
   }, []);
