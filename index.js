@@ -1,7 +1,7 @@
 const { BrowserWindow, ipcMain, globalShortcut, remote } = require('electron');
 const fs = require('fs');
 const os = require('os');
-// const path = require('path');
+const path = require('path');
 const webpackConfig = require('./webpack/dev');
 
 let captureWins = [];
@@ -62,17 +62,15 @@ const colorPicker = (e, args) => {
 
   let displays = screen.getAllDisplays();
 
+  let win;
+
   displays.map((display, index) => {
-    // if (index === 0) {
-    //   console.log(display.id);
-    //   console.log(display);
-    // }
     if (index !== 0) {
       return null;
     }
 
     console.log(display.bounds.width, display.bounds.height);
-    let captureWin = new BrowserWindow({
+    win = new BrowserWindow({
       // window 使用 fullscreen,  mac 设置为 undefined, 不可为 false
       fullscreen: os.platform() === 'win32' || undefined,
       width: display.bounds.width,
@@ -88,28 +86,24 @@ const colorPicker = (e, args) => {
       enableLargerThanScreen: true,
       hasShadow: false,
     });
-    captureWin.setAlwaysOnTop(true, 'screen-saver');
-    captureWin.setVisibleOnAllWorkspaces(true);
-    captureWin.setFullScreenable(false);
-    // captureWin.loadURL(`file://${ path.resolve(__dirname, './') }/index.html`);
+    win.setAlwaysOnTop(true, 'screen-saver');
+    win.setVisibleOnAllWorkspaces(true);
+    win.setFullScreenable(false);
+    // win.loadURL(`file://${ path.resolve(__dirname, './') }/index.html`);
 
-    captureWin.loadURL(`http://localhost:${ webpackConfig.devServer.port }/index.html`);
+    win.loadURL(`http://localhost:${ webpackConfig.devServer.port }/index.html`);
 
-    // captureWin.openDevTools()
-
-    captureWin.on('closed', () => {
-      console.log(`captureWindow xx is closing, and it should be released`);
-      captureWin = null;
+    win.on('closed', () => {
+      console.log(`window xx is closing, and it should be released`);
+      win = null;
     });
 
-    // return captureWin;
-    captureWins.push(captureWin);
+    // return win;
+    captureWins.push(win);
   });
 
-  console.log('captureWins:', captureWins);;
-
   globalShortcut.register('Esc', () => {
-    closeWindows();
+    win.webContents.send('color-picker-prepare-exit');
   });
 };
 
@@ -126,10 +120,34 @@ module.exports = {
     console.log('ColorPicker InitPlugin');
     globalShortcut.register('CmdOrCtrl+Shift+A', colorPicker);
 
+    const historyFileName = path.resolve(__dirname, './history.json');
+
+    ipcMain.on('color-picker-init-complete', (event) => {
+      fs.exists(historyFileName, exists => {
+        if (exists) {
+          fs.readFile(historyFileName, (err, data) => {
+            if (err) throw err;
+            let tmp = JSON.parse(data);
+
+            event.sender.send('color-picker-update-history', tmp);
+          });
+        }
+      });
+    });
+
     ipcMain.on('clip-view-send-value', (event, arg) => {
       console.log(arg);
       event.sender.send('repeating-clip-view-value', arg);
-    })
+    });
+
+    ipcMain.on('color-picker-exit', (event, arg) => {
+      fs.writeFile(historyFileName, JSON.stringify(arg, null, 2), err => {
+        if (err) throw err;
+        console.log('The color history file has been saved!');
+      });
+
+      closeWindows();
+    });
   },
   initTray: () => {
 

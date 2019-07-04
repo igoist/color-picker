@@ -13,8 +13,8 @@ $cm: 'cm';
 ##{$cm} {
   position: relative;
   width: 100%;
-  height: 288px;
-  background-color: #33ff33;
+  // height: 288px;
+  background-color: #fff;
 
   .#{$cm}-top {
     padding: 10px 12px;
@@ -142,6 +142,7 @@ $cm: 'cm';
       width: 40px;
 
       p {
+        color: rgba(0, 0, 0, 0.75);
         font-size: 10px;
         margin-top: 8px;
         text-align: center;
@@ -162,7 +163,8 @@ $cm: 'cm';
       width: 100%;
       height: 32px;
       line-height: 18px;
-      font-size: 10px;
+      color: rgba(0, 0, 0, 0.75);
+      font-size: 12px;
       text-align: center;
     }
 
@@ -180,6 +182,33 @@ $cm: 'cm';
         &:active {
           transform: scale(0.88);
         }
+      }
+    }
+  }
+
+  .#{$cm}-history {
+    margin-top: 12px;
+    border-top: 1px solid #EDEDED;
+    padding: 0 8px;
+    padding-top: 12px;
+    height: 83px;
+    background-color: #fff;
+
+    .#{$cm}-history-item {
+      float: left;
+      margin: 5px;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      transition: transform 350ms cubic-bezier(0.6, 2.7, 0.5, 0.2);
+
+      &:hover {
+        transform: scale(1.2);
+      }
+
+      &:active {
+        transform: scale(0.88);
       }
     }
   }

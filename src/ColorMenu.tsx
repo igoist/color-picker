@@ -46,6 +46,8 @@ let tmpGauche: string = '0px';
 let tmpH: number = 0;
 let tmpHexValue: string = 'ff0000';
 
+let tmpHistoryArr: RGB[] = [];
+
 let tmpSwitchFlag: boolean = false;
 let tmpMode: number = 1;
 
@@ -122,6 +124,7 @@ const ColorMenu = (props: PropTrick) => {
     gauche: tmpGauche,
     h: tmpH,
     hexValue: tmpHexValue,
+    historyArr: tmpHistoryArr,
     mode: tmpMode
   });
 
@@ -158,6 +161,7 @@ const ColorMenu = (props: PropTrick) => {
       gauche: tmpGauche,
       h: tmpH,
       hexValue: tmpHexValue,
+      historyArr: tmpHistoryArr,
       mode: tmpMode
     });
   };
@@ -188,6 +192,7 @@ const ColorMenu = (props: PropTrick) => {
       gauche: tmpGauche,
       h: tmpH,
       hexValue: tmpHexValue,
+      historyArr: tmpHistoryArr,
       mode: tmpMode
     });
   };
@@ -219,6 +224,7 @@ const ColorMenu = (props: PropTrick) => {
       gauche: tmpGauche,
       h: tmpH,
       hexValue: tmpHexValue,
+      historyArr: tmpHistoryArr,
       mode: tmpMode
     });
   };
@@ -277,6 +283,11 @@ const ColorMenu = (props: PropTrick) => {
       tmpTop = t + 'px';
       tmpLeft = l + 'px';
 
+      tmpHistoryArr.unshift(rgb);
+      if (tmpHistoryArr.length > 16) {
+        tmpHistoryArr.pop();
+      }
+
       setState({
         cmTop: tmpCMTop + 'px',
         cmLeft: tmpCMLeft + 'px',
@@ -285,9 +296,32 @@ const ColorMenu = (props: PropTrick) => {
         gauche: tmpGauche,
         h: tmpH,
         hexValue: tmpHexValue,
+        historyArr: tmpHistoryArr,
         mode: tmpMode
       });
     });
+
+    ipcRenderer.on('color-picker-prepare-exit', (event: any, arg: any) => {
+      ipcRenderer.send('color-picker-exit', tmpHistoryArr);
+    });
+
+    ipcRenderer.on('color-picker-update-history', (event: any, arg: any) => {
+      tmpHistoryArr = arg;
+
+      setState({
+        cmTop: tmpCMTop + 'px',
+        cmLeft: tmpCMLeft + 'px',
+        top: tmpTop,
+        left: tmpLeft,
+        gauche: tmpGauche,
+        h: tmpH,
+        hexValue: tmpHexValue,
+        historyArr: tmpHistoryArr,
+        mode: tmpMode
+      });
+    });
+
+    ipcRenderer.send('color-picker-init-complete');
   }, []);
 
   interface Action {
@@ -307,6 +341,7 @@ const ColorMenu = (props: PropTrick) => {
           gauche: tmpGauche,
           h: tmpH,
           hexValue: tmpHexValue,
+          historyArr: tmpHistoryArr,
           mode: tmpMode
         });
         break;
@@ -422,6 +457,19 @@ const ColorMenu = (props: PropTrick) => {
             </div>
           )
         }
+        <div className='cm-history'
+          style={{ display: state.historyArr.length > 0 ? '' : 'none' }}
+        >
+          {
+            state.historyArr.map((item, index) => (
+              <div className='cm-history-item'
+                style={{ backgroundColor: '#' + RGBToHEX(item) }}
+                key={ index.toString() }
+              >
+              </div>
+            ))
+          }
+        </div>
       </div>
     </div>
   );
