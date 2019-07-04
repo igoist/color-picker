@@ -2,7 +2,7 @@ import * as React from 'react';
 import { ipcRenderer } from 'electron';
 import { ColorCovert } from 'Utils';
 
-const { HSBToRGB, RGBToHEX } = ColorCovert;
+const { HSBToRGB, RGBToHEX, RGBToHSB } = ColorCovert;
 
 (window as any).cc = ColorCovert;
 
@@ -36,7 +36,7 @@ interface RGB {
   b: number;
 }
 
-let rgb: RGB = ColorCovert.HSBToRGB(hsb);
+let rgb: RGB = HSBToRGB(hsb);
 
 let tmpCMTop: number = 175;
 let tmpCMLeft: number = 360;
@@ -65,10 +65,12 @@ interface BindMoveConfig {
   el: any;
   handleMove: any;
   flag?: string;
+  props?: PropTrick;
 }
 
 const bindMove = (config: BindMoveConfig) => {
-  const { el, handleMove, flag } = config;
+  const { el, handleMove, flag, props } = config;
+
   el.addEventListener('mousedown', (e: MouseEvent) => {
     if (!flag) {
       handleMove(e);
@@ -78,6 +80,9 @@ const bindMove = (config: BindMoveConfig) => {
         y: e.pageY,
         moved: false
       };
+
+      tmpSwitchFlag = false;
+      props.dispatch({ type: 'switch', flag: false });
     }
 
     document.addEventListener('mousemove', handleMove);
@@ -232,7 +237,8 @@ const ColorMenu = (props: PropTrick) => {
     bindMove({
       el: cmTopRef.current,
       handleMove: handleDrag,
-      flag: 'HandleColorMenuDrag'
+      flag: 'HandleColorMenuDrag',
+      props: props
     })
 
     bindMove({
@@ -250,7 +256,7 @@ const ColorMenu = (props: PropTrick) => {
       rectScrollbar = scrollbar.getBoundingClientRect();
       let w = rectScrollbar.width - 10;
 
-      let tmpHSBObj = ColorCovert.RGBToHSB(arg.colorObj);
+      let tmpHSBObj = RGBToHSB(arg.colorObj);
       hsb = tmpHSBObj;
 
       tmpH = hsb.h;
