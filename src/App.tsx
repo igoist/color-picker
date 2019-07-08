@@ -254,8 +254,7 @@ const ClipView = () => {
         ipcRenderer.send('clip-view-send-value', { colorObj: tmpColorObj });
 
         // picker the color and switch off the ClipView
-        tmpSwitchFlag = false;
-        setState(returnState());
+        // do it when the ColorMenu receives the msg repeating-clip-view-value
       }
     });
   }, []);

@@ -263,6 +263,9 @@ const ColorMenu = (props: PropTrick) => {
       }
 
       setState(returnState());
+
+      tmpSwitchFlag = false;
+      props.dispatch({ type: 'switch', flag: tmpSwitchFlag });
     });
 
     ipcRenderer.on('color-picker-prepare-exit', (event: any, arg: any) => {
