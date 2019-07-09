@@ -89,9 +89,9 @@ const colorPicker = (e, args) => {
     win.setAlwaysOnTop(true, 'screen-saver');
     win.setVisibleOnAllWorkspaces(true);
     win.setFullScreenable(false);
-    // win.loadURL(`file://${ path.resolve(__dirname, './') }/index.html`);
+    win.loadURL(`file://${ path.resolve(__dirname, './') }/dist/index.html`);
 
-    win.loadURL(`http://localhost:${ webpackConfig.devServer.port }/index.html`);
+    // win.loadURL(`http://localhost:${ webpackConfig.devServer.port }/index.html`);
 
     win.on('closed', () => {
       console.log(`window xx is closing, and it should be released`);

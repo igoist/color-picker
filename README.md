@@ -10,6 +10,7 @@
 编译过程移除的问题后续考虑
 
 * ipc 几个事件
+* build 事项
 
 
 ## 遇到的问题
@@ -38,3 +39,10 @@ App 中 ClipView 点击取色后，为了更新 ColorMenu 中色值状态，发�
 3. color-picker-init-complete & color-picker-update-history
 
 ColorMenu 中利用 useEffect 进行的初始化最后一步，发送 color-picker-init-complete 至 main，由 main 中尝试读取本地 history 文件，若能读取到，则由 main 通过 color-picker-update-history 返回 history
+
+
+### build 注意事项
+
+目前，需要手动调整 index.js 中 win 指定 index.html
+
+webpack.prod.js 中 publicPath 需要指定为 './'

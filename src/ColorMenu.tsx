@@ -515,7 +515,6 @@ const ColorMenu = (props: PropTrick) => {
                 <div className='cm-history-item'
                   style={{ backgroundColor: hex }}
                   key={ index.toString() }
-                  title={ hex }
                 >
                   <div className={ `popover popover-hidden ${ tag }`}>
                     <div className='popover-arrow'></div>
