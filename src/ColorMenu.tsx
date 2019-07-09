@@ -502,13 +502,28 @@ const ColorMenu = (props: PropTrick) => {
           style={{ display: state.historyArr.length > 0 ? '' : 'none' }}
         >
           {
-            state.historyArr.map((item, index) => (
-              <div className='cm-history-item'
-                style={{ backgroundColor: '#' + RGBToHEX(item) }}
-                key={ index.toString() }
-              >
-              </div>
-            ))
+            state.historyArr.map((item, index) => {
+              let hex = '#' + RGBToHEX(item).toUpperCase();
+              let tag = '';
+              if (index === 0 || index === 8) {
+                tag = 'tag-l';
+              }
+              if (index === 7 || index === 15) {
+                tag = 'tag-r';
+              }
+              return (
+                <div className='cm-history-item'
+                  style={{ backgroundColor: hex }}
+                  key={ index.toString() }
+                  title={ hex }
+                >
+                  <div className={ `popover popover-hidden ${ tag }`}>
+                    <div className='popover-arrow'></div>
+                    <div className='popover-inner'>{ hex }</div>
+                  </div>
+                </div>
+              );
+            })
           }
         </div>
       </div>
