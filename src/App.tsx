@@ -295,7 +295,6 @@ const ClipView = () => {
 const App = () => (
   <div>
     <ClipView />
-    <p>SSds</p>
   </div>
 );
 

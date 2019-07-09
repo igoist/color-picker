@@ -49,7 +49,7 @@ let tmpHexValue: string = 'ff0000';
 let tmpHistoryArr: RGB[] = [];
 
 let tmpSwitchFlag: boolean = false;
-let tmpMode: number = 1;
+let tmpMode: number = 0;
 
 const returnState = () => {
   return {
@@ -203,6 +203,99 @@ const ColorMenu = (props: PropTrick) => {
     setState(returnState());
   };
 
+  const handleRGB = (tmpRGB: RGB) => {
+    rgb = tmpRGB;
+    hsb = RGBToHSB(rgb);
+    handleHSB();
+  };
+
+  // handle the 5: tmpTop, tmpLeft, tmpGauche, tmpH, tmpHexValue
+  const handleHSB = () => {
+    const scrollbar = scrollbarRef.current;
+    rectScrollbar = scrollbar.getBoundingClientRect();
+    let w = rectScrollbar.width - 10;
+
+    tmpH = hsb.h;
+    tmpGauche = tmpH / 360 * w + 'px';
+    if (tmpMode === 1) {
+      rgb = HSBToRGB(hsb);
+    }
+    tmpHexValue = RGBToHEX(rgb);
+
+
+    const panel = panelRef.current;
+
+    rect = panel.getBoundingClientRect();
+    w = rect.width;
+    let h = rect.height;
+
+    let t = Math.ceil(h - hsb.b * h / 100);
+    let l = Math.ceil(hsb.s * w / 100);
+
+    tmpTop = t + 'px';
+    tmpLeft = l + 'px';
+  };
+
+  const handleValueChange = () => {
+    if (tmpMode === 0) {
+      handleRGB(rgb);
+    } else {
+      handleHSB();
+    }
+  };
+
+  const handleOnChange = (e: any, type: string) => {
+    let tmpValue: number;
+    if (e.target.value === '') {
+      tmpValue = 0;
+    } else {
+      tmpValue = parseInt(e.target.value);
+      tmpValue = tmpValue < 0 ? 0 : tmpValue;
+    }
+    if (tmpValue > 0 || tmpValue === 0) {
+      if (tmpMode === 0) {
+        if (tmpValue > 255) {
+          tmpValue = 255;
+        }
+        switch(type) {
+          case 'r':
+            rgb.r = tmpValue;
+            break;
+          case 'g':
+            rgb.g = tmpValue;
+            break;
+          case 'b':
+            rgb.b = tmpValue;
+            break;
+        }
+      } else {
+        if (type === 'h') {
+          if (tmpValue > 360) {
+            tmpValue = 360;
+          }
+        } else {
+          if (tmpValue > 100) {
+            tmpValue = 100;
+          }
+        }
+        switch(type) {
+          case 'h':
+            hsb.h = tmpValue;
+            break;
+          case 's':
+            hsb.s = tmpValue;
+            break;
+          case 'b':
+            hsb.b = tmpValue;
+            break;
+        }
+      }
+
+      handleValueChange();
+      setState(returnState());
+    }
+  }
+
   React.useEffect(() => {
     const cmWrap = cmWrapRef.current;
 
@@ -232,30 +325,7 @@ const ColorMenu = (props: PropTrick) => {
     });
 
     ipcRenderer.on('repeating-clip-view-value', (event: any, arg: any) => {
-      const scrollbar = scrollbarRef.current;
-      rectScrollbar = scrollbar.getBoundingClientRect();
-      let w = rectScrollbar.width - 10;
-
-      let tmpHSBObj = RGBToHSB(arg.colorObj);
-      hsb = tmpHSBObj;
-
-      tmpH = hsb.h;
-      tmpGauche = tmpH / 360 * w + 'px';
-      rgb = HSBToRGB(hsb);
-      tmpHexValue = RGBToHEX(rgb);
-
-
-      const panel = panelRef.current;
-
-      rect = panel.getBoundingClientRect();
-      w = rect.width;
-      let h = rect.height;
-
-      let t = Math.ceil(h - hsb.b * h / 100);
-      let l = Math.ceil(hsb.s * w / 100);
-
-      tmpTop = t + 'px';
-      tmpLeft = l + 'px';
+      handleRGB(arg.colorObj);
 
       tmpHistoryArr.unshift(rgb);
       if (tmpHistoryArr.length > 16) {
@@ -352,19 +422,31 @@ const ColorMenu = (props: PropTrick) => {
           state.mode === 0 && (
             <div className='cm-panel-x'>
               <div className='cm-panel-input-group'>
-                <input type='text' value={ '#' + state.hexValue.toUpperCase() } />
+                <input type='text' value={ '#' + state.hexValue.toUpperCase() } readOnly />
                 <p>HEX</p>
               </div>
               <div className='cm-panel-input-group'>
-                <input type='text' value={ Math.ceil(rgb.r) } />
+                <input type='text' value={ Math.ceil(rgb.r) }
+                  onChange={(e) => {
+                    handleOnChange(e, 'r');
+                  }}
+                />
                 <p>R</p>
               </div>
               <div className='cm-panel-input-group'>
-                <input type='text' value={ Math.ceil(rgb.g) } />
+                <input type='text' value={ Math.ceil(rgb.g) }
+                  onChange={(e) => {
+                    handleOnChange(e, 'g');
+                  }}
+                />
                 <p>G</p>
               </div>
               <div className='cm-panel-input-group'>
-                <input type='text' value={ Math.ceil(rgb.b) } />
+                <input type='text' value={ Math.ceil(rgb.b) }
+                  onChange={(e) => {
+                    handleOnChange(e, 'b');
+                  }}
+                />
                 <p>B</p>
               </div>
               <div
@@ -380,19 +462,31 @@ const ColorMenu = (props: PropTrick) => {
           state.mode === 1 && (
             <div className='cm-panel-x'>
               <div className='cm-panel-input-group'>
-                <input type='text' value={ '#' + state.hexValue.toUpperCase() } />
+                <input type='text' value={ '#' + state.hexValue.toUpperCase() } readOnly />
                 <p>HEX</p>
               </div>
               <div className='cm-panel-input-group'>
-                <input type='text' value={ Math.ceil(hsb.h) } />
+                <input type='text' value={ Math.ceil(hsb.h) }
+                  onChange={(e) => {
+                    handleOnChange(e, 'h');
+                  }}
+                />
                 <p>H</p>
               </div>
               <div className='cm-panel-input-group'>
-                <input type='text' value={ Math.ceil(hsb.s) } />
+                <input type='text' value={ Math.ceil(hsb.s) }
+                  onChange={(e) => {
+                    handleOnChange(e, 's');
+                  }}
+                />
                 <p>S</p>
               </div>
               <div className='cm-panel-input-group'>
-                <input type='text' value={ Math.ceil(hsb.b) } />
+                <input type='text' value={ Math.ceil(hsb.b) }
+                  onChange={(e) => {
+                    handleOnChange(e, 'b');
+                  }}
+                />
                 <p>B</p>
               </div>
               <div
