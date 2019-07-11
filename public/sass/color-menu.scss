@@ -16,6 +16,14 @@ $cm: 'cm';
   // height: 288px;
   background-color: #fff;
 
+  &.is-fold {
+    .#{$cm}-panel-bar,
+    .#{$cm}-panel-x,
+    .#{$cm}-history {
+      display: none;
+    }
+  }
+
   .#{$cm}-top {
     padding: 10px 12px;
 

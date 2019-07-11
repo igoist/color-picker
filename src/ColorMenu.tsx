@@ -6,6 +6,10 @@ const { HSBToRGB, RGBToHEX, RGBToHSB } = ColorCovert;
 
 (window as any).cc = ColorCovert;
 
+declare var window: any;
+
+console.log(window.ElectronMirror, window.ElectronIpcRenderer);
+
 /**
  * 这里特别说明一下，
  * Hook 方式，handle 函数中 state.xx 因为什么什么的缘故获得的值是初始值
@@ -21,6 +25,7 @@ const { HSBToRGB, RGBToHEX, RGBToHSB } = ColorCovert;
  * tmpH: hsb.h
  * tmpHexValue: ...
  * tmpSwitchFlag: 标记 ClipView 是否显示，或者干脆就当开关好了
+ * tmpFold: 标记是否折叠
  * tmpMode: RGB or HSB or ...
  */
 
@@ -49,6 +54,7 @@ let tmpHexValue: string = 'ff0000';
 let tmpHistoryArr: RGB[] = [];
 
 let tmpSwitchFlag: boolean = false;
+let tmpFold: boolean = false;
 let tmpMode: number = 0;
 
 const returnState = () => {
@@ -61,6 +67,7 @@ const returnState = () => {
     h: tmpH,
     hexValue: tmpHexValue,
     historyArr: tmpHistoryArr,
+    fold: tmpFold,
     mode: tmpMode
   };
 };
@@ -203,6 +210,11 @@ const ColorMenu = (props: PropTrick) => {
     setState(returnState());
   };
 
+  const handleFold = () => {
+    tmpFold = !tmpFold;
+    setState(returnState());
+  }
+
   const handleRGB = (tmpRGB: RGB) => {
     rgb = tmpRGB;
     hsb = RGBToHSB(rgb);
@@ -296,6 +308,10 @@ const ColorMenu = (props: PropTrick) => {
     }
   }
 
+  const handleHistoryItemClick = (value: string) => {
+    ipcRenderer.send('color-picker-change-clipboard', value);
+  }
+
   React.useEffect(() => {
     const cmWrap = cmWrapRef.current;
 
@@ -375,10 +391,12 @@ const ColorMenu = (props: PropTrick) => {
       }}
       ref={ cmWrapRef }
     >
-      <div id='cm'>
+      <div id='cm' className={ `${ state.fold ? 'is-fold' : '' }`}>
         <div className='cm-top' ref={ cmTopRef }>
           <div className='item'></div>
-          <div className='item'></div>
+          <div className='item'
+            onClick={ handleFold }
+          ></div>
           <div className='item'></div>
         </div>
         <div className='cm-panel-wrap'>
@@ -513,8 +531,11 @@ const ColorMenu = (props: PropTrick) => {
               }
               return (
                 <div className='cm-history-item'
-                  style={{ backgroundColor: hex }}
                   key={ index.toString() }
+                  style={{ backgroundColor: hex }}
+                  onClick={() => {
+                    handleHistoryItemClick(hex);
+                  }}
                 >
                   <div className={ `popover popover-hidden ${ tag }`}>
                     <div className='popover-arrow'></div>

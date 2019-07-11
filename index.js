@@ -1,4 +1,4 @@
-const { BrowserWindow, ipcMain, globalShortcut, remote } = require('electron');
+const { BrowserWindow, ipcMain, globalShortcut, clipboard } = require('electron');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -139,6 +139,10 @@ module.exports = {
       console.log(arg);
       event.sender.send('repeating-clip-view-value', arg);
     });
+
+    ipcMain.on('color-picker-change-clipboard', (event, arg) => {
+      clipboard.writeText(arg);
+    })
 
     ipcMain.on('color-picker-exit', (event, arg) => {
       fs.writeFile(historyFileName, JSON.stringify(arg, null, 2), err => {
