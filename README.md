@@ -43,6 +43,10 @@ ColorMenu 中利用 useEffect 进行的初始化最后一步，发送 color-pick
 
 ### build 注意事项
 
-目前，需要手动调整 index.js 中 win 指定 index.html
+目前，从 dev 到 prod，需要手动调整 index.js 中 win 指定 index.html
 
 webpack.prod.js 中 publicPath 需要指定为 './'
+
+另外已经在 webpack 设置 external，将 React、ReactDOM 编译移除，通过直接引用 lib/*.min.js
+
+至于 electron，不需要刻意设置 external 去 exclude，通过 target 设置为 electron-renderer 就已处理

@@ -24,6 +24,11 @@ const webpackConfig = {
     extensions: ['.ts', '.tsx', '.js']
   },
 
+  externals: {
+    'react': 'React',
+    'react-dom': 'ReactDOM',
+  },
+
   output: {
     filename: '[name].[hash:8].js',
     path: path.resolve(path.resolve(__dirname, '..'), 'dist/'),
